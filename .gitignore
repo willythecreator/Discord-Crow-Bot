@@ -1,0 +1,10 @@
+.venv/
+.env
+data/
+__pycache__/
+*.db
+models/
+datasets/
+*.gguf
+logs/
+*.log
