@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 EXTENSIONS = [
     "bot.cogs.general",
     "bot.cogs.tracker",
+    "bot.cogs.game_alerts",
 ]
 
 class CrowBot(commands.Bot):
@@ -29,12 +30,25 @@ class CrowBot(commands.Bot):
             await self.load_extension(ext)
             log.info("Loaded %s", ext)
 
+        self.tree.on_error = self.on_app_command_error
+
         if config.DEV_GUILD_ID:
             guild = discord.Object(id=config.DEV_GUILD_ID)
             self.tree.copy_global_to(guild=guild)
             await self.tree.sync(guild=guild)
         else:
             await self.tree.sync()
+
+    async def on_app_command_error(self, interaction, error):
+        if isinstance(error, discord.app_commands.MissingPermissions):
+            msg = "You need the Manage Server permission for that."
+        else:
+            log.exception("Command error", exc_info=error)
+            msg = "Something went wrong. Check the bot console."
+        if interaction.response.is_done():
+            await interaction.folloup.send(msg, ephemeral=True)
+        else:
+            await interaction.response.send_message(msg, ephemeral=True)
 
     async def on_ready(self):
         log.info("Logged in as %s (%s)", self.user, self.user.id)

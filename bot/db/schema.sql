@@ -20,3 +20,10 @@ CREATE TABLE IF NOT EXISTS guild_settings (
     value TEXT NOT NULL,
     PRIMARY KEY (guild_id, key)
 );
+
+CREATE TABLE IF NOT EXISTS posted_deals (
+    guild_id INTEGER NOT NULL,
+    deal_id TEXT NOT NULL,
+    posted_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (guild_id, deal_id)
+);
